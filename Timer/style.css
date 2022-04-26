@@ -1,0 +1,20 @@
+* {
+    font: inherit;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans',
+      'Droid Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+.dial {
+    height: 400px;
+    width: 400px;
+  }
