@@ -1,31 +1,59 @@
+get = function (obj, key) {
+    return key.split(".").reduce(function (o, x) {
+        return typeof o == "undefined" || o === null ? o : o[x];
+    }, obj);
+};
+
+has = function (obj, key) {
+    return key.split(".").every(function (x) {
+        if (typeof obj != "object" || obj === null || !x in obj) return false;
+        obj = obj[x];
+        return true;
+    });
+};
+
 class Timer {
-  constructor(durationInput, startButton, pauseButton) {
-    this.durationInput = durationInput;
-    this.startButton = startButton;
-    this.pauseButton = pauseButton;
+    constructor(durationInput, startButton, stopButton, callbacks) {
+        this.durationInput = durationInput;
+        this.startButton = startButton;
+        this.stopButton = stopButton;
+        this.callbacks = callbacks;
 
-    this.startButton.addEventListener("click", this.start);
-    this.pauseButton.addEventListener("click", this.pause);
-  }
+        this.startButton.addEventListener("click", this.start);
+        this.stopButton.addEventListener("click", this.stop);
+    }
 
-  start = () => {
-    this.tick();
-    this.interval = setInterval(this.tick, 1000);
-  };
+    start = () => {
+        if (has(this, "callbacks.onStart")) {
+            this.callbacks.onStart(this.timeRemaining);
+        }
+        this.tick();
+        this.interval = setInterval(this.tick, 20);
+    };
 
-  tick = () => {
-    this.timeRemaining = this.timeRemaining - 1;
-  };
+    tick = () => {
+        if (this.timeRemaining > 0) {
+            if (has(this, "callbacks.onTick")) {
+                this.callbacks.onTick(this.timeRemaining);
+            }
+            this.timeRemaining = this.timeRemaining - 0.02;
+        } else {
+            this.stop();
+        }
+    };
 
-  pause = () => {
-    clearInterval(this.interval);
-  };
+    stop = () => {
+        if (has(this, "callbacks.onComplete")) {
+            this.callbacks.onComplete();
+        }
+        clearInterval(this.interval);
+    };
 
-  get timeRemaining() {
-    return parseFloat(this.durationInput.value);
-  }
+    get timeRemaining() {
+        return parseFloat(this.durationInput.value);
+    }
 
-  set timeRemaining(timeRemaining) {
-    this.durationInput.value = timeRemaining;
-  }
+    set timeRemaining(timeRemaining) {
+        this.durationInput.value = timeRemaining.toFixed(2);
+    }
 }
